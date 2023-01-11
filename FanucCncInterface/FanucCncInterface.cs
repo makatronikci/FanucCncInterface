@@ -92,6 +92,40 @@ namespace FanucCncInterface
         }
 
         /// <summary>
+        /// Use for writing data to one byte.
+        /// </summary>
+        /// <param name="number">Type data number</param>
+        /// /// <param name="value">Type bitarray value to be written</param>
+        /// <returns>It returns as EventResult.</returns>
+        public EventResult WriteDSignals(ushort number, BitArray value)
+        {
+            short ret, ret2;
+            Focas1.IODBPMC rSIGNAL = new Focas1.IODBPMC();
+            ret = Focas1.pmc_rdpmcrng(Handle, 9, 0, number, number, 9, rSIGNAL);
+            if (ret == Focas1.EW_OK)
+            {
+                BitArray b = new BitArray(new int[] { rSIGNAL.ldata[0] });
+                b = value;
+
+                rSIGNAL.ldata[0] = getIntFromBitArray(b);
+
+                ret2 = Focas1.pmc_wrpmcrng(Handle, 9, rSIGNAL);
+                if (ret2 == Focas1.EW_OK)
+                {
+                    return EventResult.Success;
+                }
+                else
+                {
+                    return EventResult.Fail;
+                }
+            }
+            else
+            {
+                return EventResult.Fail;
+            }
+        }
+
+        /// <summary>
         /// Use for writing data to just one bit.
         /// </summary>
         /// <param name="number">Type data number</param>
